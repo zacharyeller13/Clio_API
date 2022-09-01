@@ -1,8 +1,6 @@
 import requests
 from requests.structures import CaseInsensitiveDict
 import csv
-
-from pprint import pprint as pp
 import time
 
 def set_headers() -> CaseInsensitiveDict:
