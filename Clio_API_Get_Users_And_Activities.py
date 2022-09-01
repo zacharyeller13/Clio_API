@@ -1,4 +1,3 @@
-from email import header
 import requests
 from requests.structures import CaseInsensitiveDict
 import csv
