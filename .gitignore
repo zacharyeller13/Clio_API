@@ -3,3 +3,5 @@ test_csv.py
 test_flush_timeout.py
 test_parse_calendary_entries.py
 calendar_attendees.csv
+test_get_users.py
+users.csv
