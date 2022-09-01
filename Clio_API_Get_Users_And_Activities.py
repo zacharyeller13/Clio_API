@@ -6,7 +6,9 @@ from pprint import pprint as pp
 import time
 
 def set_headers() -> CaseInsensitiveDict:
-    """Sets and returns request headers necessary for Clio endpoints"""
+    """
+    Sets and returns request headers necessary for Clio endpoints
+    """
 
     headers = CaseInsensitiveDict()
     headers["Host"] = "app.clio.com"
@@ -99,7 +101,9 @@ def get_calendar_entries(url: str, headers: CaseInsensitiveDict) -> list[dict]:
     return entries
 
 def parse_calendar_entries(entries: list[dict]) -> list[dict]:
-    """Parses JSON response of calendar entries and returns a list of dicts for future processing"""
+    """
+    Parses JSON response of calendar entries and returns a list of dicts for future processing
+    """
     attendees = []
 
     for entry in entries:
@@ -128,6 +132,10 @@ def write_csv(attendees: list[dict], csv_file: str) -> None:
         writer.writerows(attendees)
 
 def get_csv_filepath(endpoint: str) -> str:
+    """
+    Takes the name of an endpoint and prompts user for absolute filepath to the desired CSV file for that endpoint
+    Returns the filepath as a string for use in csv.writer functions
+    """
     csv_file = input(f"Please enter the fully-qualified (absolute) path to the CSV file for data from endpoint {endpoint}: ")
 
     return csv_file
