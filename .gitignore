@@ -5,3 +5,7 @@ test_parse_calendary_entries.py
 calendar_attendees.csv
 test_get_users.py
 users.csv
+test.csv
+/tests
+/.vscode
+/.pytest_cache
