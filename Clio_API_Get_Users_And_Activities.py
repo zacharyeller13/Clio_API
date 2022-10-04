@@ -1,6 +1,6 @@
 import requests
 from requests.structures import CaseInsensitiveDict
-from Clio_API_GetAuthorization import get_auth_token
+from Clio_API_GetAuthorization import Clio
 import csv
 import time
 

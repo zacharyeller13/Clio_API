@@ -1,30 +1,48 @@
-import requests
-from requests.structures import CaseInsensitiveDict
+from requests_oauthlib import OAuth2Session
 
-url = "https://app.clio.com/oauth/token"
-client_id = ""
-client_secret = ""
-auth_code = ""
+# Define parameters
+client_id = r""
+client_secret = r""
 
-headers = CaseInsensitiveDict()
-headers["Host"] = "app.clio.com"
-headers["Content-Type"] = "application/x-www-form-urlencoded"
 
-auth_params = {
-    "client_id": client_id,
-    "client_secret": client_secret,
-    "grant_type": "authorization_code",
-    "code": auth_code,
-    "client_id": client_id,
-    "redirect_uri": "https://app.clio.com/oauth/approval"
-}
+def Clio(
+    client_id: str, 
+    client_secret: str, 
+    redirect_uri: str="https://app.clio.com/oauth/approval", 
+    auth_url: str="https://app.clio.com/oauth/authorize",
+    token_url: str="https://app.clio.com/oauth/token"
+) -> OAuth2Session:
+    """
+    Generate an OAuth Session Object to be used for authenticated requests
 
-def get_auth_token() -> str:
-    resp = requests.post(url, headers=headers, params=auth_params)
-    auth_token = resp.json()['auth_token']
-    print(resp.json())
-    return auth_token
+    Arguments:
+        - client_id
+        - client_secret
+        - auth_url: Clio's Authorization URL
+        - token_url: Clio's Token URL
+        - redirect_uri: if none for your app; Clio allows https://app.clio.com/oauth/approval
+    """
+    # Create a client
+    oauth = OAuth2Session(
+        client_id, 
+        redirect_uri=redirect_uri,
+    )
 
-if __name__ == "__main__":
+    # Obtain authorization url to be visited by User
+    authorization_url, _ = oauth.authorization_url(
+        auth_url
+    )
 
-    get_auth_token()
+    # Print auth url and request input of authorization code
+    print(f"Please go to {authorization_url} and authorize access")
+    authorization_response = input("Enter the full callback URL")
+
+    # Define access token from using authorization response code
+    token = oauth.fetch_token(
+        token_url,
+        authorization_response=authorization_response,
+        client_secret=client_secret,
+        include_client_id=True
+    )
+
+    return oauth
