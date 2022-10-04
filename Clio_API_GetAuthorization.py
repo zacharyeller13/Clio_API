@@ -1,14 +1,29 @@
 from requests_oauthlib import OAuth2Session
+from configparser import ConfigParser
 
 # Define parameters
 client_id = r""
 client_secret = r""
 
+def get_config():
+
+    config = ConfigParser()
+    config.read("config.ini")
+
+    return config
+
+def get_client_id(config: ConfigParser) -> str:
+
+    return config.get("ClientInfo", "client_id")
+
+def get_client_secret(config: ConfigParser) -> str:
+    
+    return config.get("ClientInfo", "client_secret")
 
 def Clio(
     client_id: str, 
     client_secret: str, 
-    redirect_uri: str="https://app.clio.com/oauth/approval", 
+    redirect_uri: str="https://app.clio.com/oauth/approval",
     auth_url: str="https://app.clio.com/oauth/authorize",
     token_url: str="https://app.clio.com/oauth/token"
 ) -> OAuth2Session:

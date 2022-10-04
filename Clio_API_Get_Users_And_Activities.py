@@ -1,6 +1,7 @@
 import requests
 from requests.structures import CaseInsensitiveDict
-from Clio_API_GetAuthorization import Clio
+from requests_oauthlib import OAuth2Session
+from .Clio_API_GetAuthorization import Clio
 import csv
 import time
 
@@ -12,7 +13,7 @@ def set_headers() -> CaseInsensitiveDict:
     headers = CaseInsensitiveDict()
     headers["Host"] = "app.clio.com"
     headers["Content-Type"] = "application/x-www-form-urlencoded"
-    headers["Authorization"] = f"Bearer {}"
+    headers["Authorization"] = f"Bearer {12345}"
     #headers["Cookie"] = ""
 
     return headers
