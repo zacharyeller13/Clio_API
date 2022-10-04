@@ -5,10 +5,10 @@ from configparser import ConfigParser
 client_id = r""
 client_secret = r""
 
-def get_config():
+def get_config(config_file: str) -> ConfigParser:
 
     config = ConfigParser()
-    config.read("config.ini")
+    config.read(config_file)
 
     return config
 
@@ -17,7 +17,7 @@ def get_client_id(config: ConfigParser) -> str:
     return config.get("ClientInfo", "client_id")
 
 def get_client_secret(config: ConfigParser) -> str:
-    
+
     return config.get("ClientInfo", "client_secret")
 
 def Clio(
@@ -61,3 +61,8 @@ def Clio(
     )
 
     return oauth
+
+if __name__ == '__main__':
+
+    config = get_config("config.ini")
+    print(get_client_id(config))
