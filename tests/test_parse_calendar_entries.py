@@ -1,4 +1,4 @@
-from ..Clio_API_Get_Users_And_Activities import parse_calendar_entries
+from Clio_API_Get_Users_And_Activities import parse_calendar_entries
 
 # Test attendees list
 attendees = [{'attendees': [],

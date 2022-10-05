@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 import os
-from ..Clio_API_GetAuthorization import get_config, get_client_id, get_client_secret
+from Clio_API_GetAuthorization import get_config, get_client_id, get_client_secret
 
 curpath = os.path.dirname(os.path.realpath(__file__))
 file = os.path.join(curpath, "test_config.ini")
