@@ -9,3 +9,4 @@ calendar_attendees.csv
 users.csv
 test.csv
 config.ini
+deauthorize.py

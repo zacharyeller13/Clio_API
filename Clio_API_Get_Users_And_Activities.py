@@ -20,7 +20,7 @@ def set_headers() -> CaseInsensitiveDict:
 
     return headers
 
-def get_users(url: str, headers: CaseInsensitiveDict) -> list[dict]:
+def get_users(url: str, session: OAuth2Session) -> list[dict]:
     """
     Sends get request to /users.json endpoint and returns JSON of all entries.
     Navigates paginated results if response includes a 'next' url.
@@ -31,7 +31,7 @@ def get_users(url: str, headers: CaseInsensitiveDict) -> list[dict]:
 
     users = []
 
-    resp = requests.get(url, headers=headers, params={
+    resp = session.get(url, params={
         "fields": "id,name,default_calendar_id",
         "order": "id(asc)"
     })
@@ -43,7 +43,7 @@ def get_users(url: str, headers: CaseInsensitiveDict) -> list[dict]:
         
         url = resp.json()['meta']['paging'].get('next')
         print(f"Requesting: {url}")
-        resp = requests.get(url, headers=headers)
+        resp = session.get(url)
         print(resp.status_code)
         print(f"X-RateLimit-Remaining: {resp.headers['X-RateLimit-Remaining']}")
 
@@ -60,7 +60,7 @@ def get_users(url: str, headers: CaseInsensitiveDict) -> list[dict]:
 
     return users
 
-def get_calendar_entries(url: str, headers: CaseInsensitiveDict) -> list[dict]:
+def get_calendar_entries(url: str, session: OAuth2Session) -> list[dict]:
     """
     Sends get request to /calendar_entries.json endpoint and returns the JSON of all entries.
     Navigates paginated results if response includes a 'next' url.
@@ -73,7 +73,7 @@ def get_calendar_entries(url: str, headers: CaseInsensitiveDict) -> list[dict]:
 
     entries = []
 
-    resp = requests.get(url, headers=headers, params={
+    resp = session.get(url, params={
         "fields": "id,attendees,calendar_owner",
         "order" : "id(asc)"
     })
@@ -85,7 +85,7 @@ def get_calendar_entries(url: str, headers: CaseInsensitiveDict) -> list[dict]:
         
         url = resp.json()['meta']['paging'].get('next')
         print(f"Requesting: {url}")
-        resp = requests.get(url, headers=headers)
+        resp = session.get(url)
         print(resp.status_code)
         print(f"X-RateLimit-Remaining: {resp.headers['X-RateLimit-Remaining']}")
 
@@ -146,7 +146,7 @@ def main() -> None:
 
     # Create oauth client session
     curpath = os.path.dirname(os.path.realpath(__file__))
-    config_file = os.path.join(curpath, "test_config.ini")
+    config_file = os.path.join(curpath, "config.ini")
     config_parser = get_config(config_file)
     client_id = get_client_id(config_parser)
     client_secret = get_client_secret(config_parser)
