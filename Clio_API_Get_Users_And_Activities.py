@@ -7,19 +7,6 @@ import time
 
 from Clio_API_GetAuthorization import get_config, get_client_id, get_client_secret, Clio
 
-def set_headers() -> CaseInsensitiveDict:
-    """
-    Sets and returns request headers necessary for Clio endpoints
-    """
-
-    headers = CaseInsensitiveDict()
-    headers["Host"] = "app.clio.com"
-    headers["Content-Type"] = "application/x-www-form-urlencoded"
-    headers["Authorization"] = f"Bearer {12345}"
-    #headers["Cookie"] = ""
-
-    return headers
-
 def get_users(url: str, session: OAuth2Session) -> list[dict]:
     """
     Sends get request to /users.json endpoint and returns JSON of all entries.
@@ -138,7 +125,9 @@ def get_csv_filepath(endpoint: str) -> str:
     Takes the name of an endpoint and prompts user for absolute filepath to the desired CSV file for that endpoint
     Returns the filepath as a string for use in csv.writer functions
     """
-    csv_file = input(f"Please enter the fully-qualified (absolute) path to the CSV file for data from endpoint {endpoint}: ")
+    csv_file = input(
+        f"Please enter the fully-qualified (absolute) path to the CSV file for data from endpoint {endpoint}: "
+    )
 
     return csv_file
 
@@ -152,18 +141,21 @@ def main() -> None:
     client_secret = get_client_secret(config_parser)
     session = Clio(client_id, client_secret)
 
-    headers = set_headers()
+    # Get CSV file paths
     calendar_csv_file = get_csv_filepath("/calendar_entries.json")
     users_csv_file = get_csv_filepath("/users.json")
 
     base_calendar_url = "https://app.clio.com/api/v4/calendar_entries.json"
     base_users_url = "https://app.clio.com/api/v4/users.json"
 
-    calendar_entries = get_calendar_entries(base_calendar_url, headers)
+    # Get and parse calendar entries
+    calendar_entries = get_calendar_entries(base_calendar_url, session)
     attendees = parse_calendar_entries(calendar_entries)
 
-    users = get_users(base_users_url, headers)
+    # Get users
+    users = get_users(base_users_url, session)
 
+    # Write CSV files
     write_csv(attendees, calendar_csv_file)
     write_csv(users, users_csv_file)
 
