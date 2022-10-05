@@ -1,24 +1,13 @@
 import requests
 from requests.structures import CaseInsensitiveDict
 from requests_oauthlib import OAuth2Session
-from .Clio_API_GetAuthorization import Clio
+import os
 import csv
 import time
 
-def set_headers() -> CaseInsensitiveDict:
-    """
-    Sets and returns request headers necessary for Clio endpoints
-    """
+from Clio_API_GetAuthorization import get_config, get_client_id, get_client_secret, Clio
 
-    headers = CaseInsensitiveDict()
-    headers["Host"] = "app.clio.com"
-    headers["Content-Type"] = "application/x-www-form-urlencoded"
-    headers["Authorization"] = f"Bearer {12345}"
-    #headers["Cookie"] = ""
-
-    return headers
-
-def get_users(url: str, headers: CaseInsensitiveDict) -> list[dict]:
+def get_users(url: str, session: OAuth2Session) -> list[dict]:
     """
     Sends get request to /users.json endpoint and returns JSON of all entries.
     Navigates paginated results if response includes a 'next' url.
@@ -29,7 +18,7 @@ def get_users(url: str, headers: CaseInsensitiveDict) -> list[dict]:
 
     users = []
 
-    resp = requests.get(url, headers=headers, params={
+    resp = session.get(url, params={
         "fields": "id,name,default_calendar_id",
         "order": "id(asc)"
     })
@@ -41,7 +30,7 @@ def get_users(url: str, headers: CaseInsensitiveDict) -> list[dict]:
         
         url = resp.json()['meta']['paging'].get('next')
         print(f"Requesting: {url}")
-        resp = requests.get(url, headers=headers)
+        resp = session.get(url)
         print(resp.status_code)
         print(f"X-RateLimit-Remaining: {resp.headers['X-RateLimit-Remaining']}")
 
@@ -58,7 +47,7 @@ def get_users(url: str, headers: CaseInsensitiveDict) -> list[dict]:
 
     return users
 
-def get_calendar_entries(url: str, headers: CaseInsensitiveDict) -> list[dict]:
+def get_calendar_entries(url: str, session: OAuth2Session) -> list[dict]:
     """
     Sends get request to /calendar_entries.json endpoint and returns the JSON of all entries.
     Navigates paginated results if response includes a 'next' url.
@@ -71,7 +60,7 @@ def get_calendar_entries(url: str, headers: CaseInsensitiveDict) -> list[dict]:
 
     entries = []
 
-    resp = requests.get(url, headers=headers, params={
+    resp = session.get(url, params={
         "fields": "id,attendees,calendar_owner",
         "order" : "id(asc)"
     })
@@ -83,7 +72,7 @@ def get_calendar_entries(url: str, headers: CaseInsensitiveDict) -> list[dict]:
         
         url = resp.json()['meta']['paging'].get('next')
         print(f"Requesting: {url}")
-        resp = requests.get(url, headers=headers)
+        resp = session.get(url)
         print(resp.status_code)
         print(f"X-RateLimit-Remaining: {resp.headers['X-RateLimit-Remaining']}")
 
@@ -136,24 +125,37 @@ def get_csv_filepath(endpoint: str) -> str:
     Takes the name of an endpoint and prompts user for absolute filepath to the desired CSV file for that endpoint
     Returns the filepath as a string for use in csv.writer functions
     """
-    csv_file = input(f"Please enter the fully-qualified (absolute) path to the CSV file for data from endpoint {endpoint}: ")
+    csv_file = input(
+        f"Please enter the fully-qualified (absolute) path to the CSV file for data from endpoint {endpoint}: "
+    )
 
     return csv_file
 
 def main() -> None:
 
-    headers = set_headers()
+    # Create oauth client session
+    curpath = os.path.dirname(os.path.realpath(__file__))
+    config_file = os.path.join(curpath, "config.ini")
+    config_parser = get_config(config_file)
+    client_id = get_client_id(config_parser)
+    client_secret = get_client_secret(config_parser)
+    session = Clio(client_id, client_secret)
+
+    # Get CSV file paths
     calendar_csv_file = get_csv_filepath("/calendar_entries.json")
     users_csv_file = get_csv_filepath("/users.json")
 
     base_calendar_url = "https://app.clio.com/api/v4/calendar_entries.json"
     base_users_url = "https://app.clio.com/api/v4/users.json"
 
-    calendar_entries = get_calendar_entries(base_calendar_url, headers)
+    # Get and parse calendar entries
+    calendar_entries = get_calendar_entries(base_calendar_url, session)
     attendees = parse_calendar_entries(calendar_entries)
 
-    users = get_users(base_users_url, headers)
+    # Get users
+    users = get_users(base_users_url, session)
 
+    # Write CSV files
     write_csv(attendees, calendar_csv_file)
     write_csv(users, users_csv_file)
 

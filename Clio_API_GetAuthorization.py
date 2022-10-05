@@ -1,11 +1,11 @@
 from requests_oauthlib import OAuth2Session
 from configparser import ConfigParser
 
-# Define parameters
-client_id = r""
-client_secret = r""
-
+# Get client_id and client_secret
 def get_config(config_file: str) -> ConfigParser:
+    """
+    Read config_file and return a ConfigParser object for further processing of variables
+    """
 
     config = ConfigParser()
     config.read(config_file)
@@ -13,12 +13,25 @@ def get_config(config_file: str) -> ConfigParser:
     return config
 
 def get_client_id(config: ConfigParser) -> str:
+    """
+    Return the client_id from config.ini file
+    """
 
     return config.get("ClientInfo", "client_id")
 
 def get_client_secret(config: ConfigParser) -> str:
+    """
+    Return the client_secret from config.ini file
+    """
 
     return config.get("ClientInfo", "client_secret")
+
+def deauthorize(session: OAuth2Session) -> str:
+
+    resp = session.post("https://app.clio.com/oauth/deauthorize", params={
+        "token": session.token
+    })
+    return resp.status_code
 
 def Clio(
     client_id: str, 
@@ -50,7 +63,7 @@ def Clio(
 
     # Print auth url and request input of authorization code
     print(f"Please go to {authorization_url} and authorize access")
-    authorization_response = input("Enter the full callback URL")
+    authorization_response = input("Enter the full callback URL: ")
 
     # Define access token from using authorization response code
     token = oauth.fetch_token(
@@ -61,8 +74,3 @@ def Clio(
     )
 
     return oauth
-
-if __name__ == '__main__':
-
-    config = get_config("config.ini")
-    print(get_client_id(config))
