@@ -1,9 +1,11 @@
 import requests
 from requests.structures import CaseInsensitiveDict
 from requests_oauthlib import OAuth2Session
-from .Clio_API_GetAuthorization import Clio
+import os
 import csv
 import time
+
+from Clio_API_GetAuthorization import get_config, get_client_id, get_client_secret, Clio
 
 def set_headers() -> CaseInsensitiveDict:
     """
@@ -141,6 +143,14 @@ def get_csv_filepath(endpoint: str) -> str:
     return csv_file
 
 def main() -> None:
+
+    # Create oauth client session
+    curpath = os.path.dirname(os.path.realpath(__file__))
+    config_file = os.path.join(curpath, "test_config.ini")
+    config_parser = get_config(config_file)
+    client_id = get_client_id(config_parser)
+    client_secret = get_client_secret(config_parser)
+    session = Clio(client_id, client_secret)
 
     headers = set_headers()
     calendar_csv_file = get_csv_filepath("/calendar_entries.json")
