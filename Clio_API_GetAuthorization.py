@@ -26,6 +26,13 @@ def get_client_secret(config: ConfigParser) -> str:
 
     return config.get("ClientInfo", "client_secret")
 
+def deauthorize(session: OAuth2Session) -> str:
+
+    resp = session.post("https://app.clio.com/oauth/deauthorize", params={
+        "token": session.token
+    })
+    return resp.status_code
+
 def Clio(
     client_id: str, 
     client_secret: str, 
@@ -56,7 +63,7 @@ def Clio(
 
     # Print auth url and request input of authorization code
     print(f"Please go to {authorization_url} and authorize access")
-    authorization_response = input("Enter the full callback URL")
+    authorization_response = input("Enter the full callback URL: ")
 
     # Define access token from using authorization response code
     token = oauth.fetch_token(
