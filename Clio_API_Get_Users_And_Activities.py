@@ -5,7 +5,7 @@ import os
 import csv
 import time
 
-from Clio_API_GetAuthorization import get_config, get_client_id, get_client_secret, Clio
+from get_authorization import Config, Clio
 
 def get_users(url: str, session: OAuth2Session) -> list[dict]:
     """
@@ -133,13 +133,21 @@ def get_csv_filepath(endpoint: str) -> str:
 
 def main() -> None:
 
-    # Create oauth client session
+    # client_id and client_secret should be in config.ini; create Config object to read in
     curpath = os.path.dirname(os.path.realpath(__file__))
     config_file = os.path.join(curpath, "config.ini")
-    config_parser = get_config(config_file)
-    client_id = get_client_id(config_parser)
-    client_secret = get_client_secret(config_parser)
-    session = Clio(client_id, client_secret)
+    config = Config("config.ini")
+
+    # Create new Clio(OAuth2Session) object 
+    session = Clio(config.client_id)
+    print(f"Please go to {session.authorization_url(session.auth_url)[0]} and authorize access")
+    authorization_response = input("Enter the full callback URL: ")
+    session.fetch_token(
+        session.token_url,
+        authorization_response=authorization_response,
+        client_secret=config.client_secret,
+        include_client_id=True
+    )
 
     # Get CSV file paths
     calendar_csv_file = get_csv_filepath("/calendar_entries.json")
