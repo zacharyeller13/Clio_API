@@ -1,7 +1,6 @@
 /.vscode
 /.pytest_cache
 __pycache__
-Clio_API_Get_Users_And_Activities_async.py
 test_csv.py
 test_get_users.py
 test_rate_limit_countdown.py
