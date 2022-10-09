@@ -1,6 +1,31 @@
 from requests_oauthlib import OAuth2Session
 from configparser import ConfigParser
 
+class Config(ConfigParser):
+
+    def __init__(self, config_file):
+        super().__init__()
+        self.client_id = config_file
+        self.client_secret = config_file
+
+    @property
+    def client_id(self):
+        return self.__client_id
+
+    @client_id.setter
+    def client_id(self, config_file):
+        self.read(config_file)
+        self.__client_id = self.get("ClientInfo", "client_id")
+
+    @property
+    def client_secret(self):
+        return self.__client_secret
+
+    @client_secret.setter
+    def client_secret(self, config_file):
+        self.read(config_file)
+        self.__client_secret = self.get("ClientInfo", "client_secret")
+
 class Clio(OAuth2Session):
 
     def __init__(
@@ -16,7 +41,6 @@ class Clio(OAuth2Session):
         token_updater=None,
         auth_url="https://app.clio.com/oauth/authorize",
         token_url="https://app.clio.com/oauth/token",
-        **kwargs
     ):
         super().__init__(
             client_id,
@@ -28,14 +52,13 @@ class Clio(OAuth2Session):
             token,
             state,
             token_updater,
-            **kwargs
         )
         self.auth_url = auth_url
         self.token_url = token_url
 
     def deauthorize(self) -> str:
         resp = self.post("https://app.clio.com/oauth/deauthorize", params={
-        "token": self.token
+            "token": self.token
         })
 
         if resp.ok:
