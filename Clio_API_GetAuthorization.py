@@ -66,7 +66,7 @@ def Clio(
     authorization_response = input("Enter the full callback URL: ")
 
     # Define access token from using authorization response code
-    token = oauth.fetch_token(
+    oauth.fetch_token(
         token_url,
         authorization_response=authorization_response,
         client_secret=client_secret,
