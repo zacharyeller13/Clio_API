@@ -136,9 +136,9 @@ def main() -> None:
     # client_id and client_secret should be in config.ini; create Config object to read in
     curpath = os.path.dirname(os.path.realpath(__file__))
     config_file = os.path.join(curpath, "config.ini")
-    config = Config("config.ini")
+    config = Config(config_file)
 
-    # Create new Clio(OAuth2Session) object 
+    # Create new Clio OAuth2 session
     session = Clio(config.client_id)
     print(f"Please go to {session.authorization_url(session.auth_url)[0]} and authorize access")
     authorization_response = input("Enter the full callback URL: ")
