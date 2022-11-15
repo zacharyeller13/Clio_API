@@ -8,7 +8,7 @@ Simple API Client for Clio
 > Currently unmaintained/abandoned<br />
 > Originally started building for use in projects at my employer, which now uses a more universal tool for exporting data. Thus, there's no incentive/need to continue development on this.
 
-This project is an API client to help extract data from [Clio](www.clio.com) via their [API](https://app.clio.com/api/v4/documentation).
+This project is an API client to help extract data from [Clio](https://www.clio.com) via their [API](https://app.clio.com/api/v4/documentation).
 
 Currently the primary endpoints built out are `/users` and `/calendar_entries`.
 
